@@ -1,0 +1,209 @@
+
+package Invasion;
+import jgame.*;
+import jgame.platform.*;
+/** Minimal shooter illustrating Eclipse usage. */
+public class Invasion extends StdGame {
+	
+	int teleport = 0;
+	
+	public static void main(String[]args) {new Invasion(parseSizeArgs(args,0));}
+	public Invasion() { initEngineApplet(); }
+	public Invasion(JGPoint size) { initEngine(640,480); }
+	public void initCanvas() { setCanvasSettings(32,20,16,16,JGColor.green,new JGColor(30,40,50),null); }
+	public void initGame() {
+		defineMedia("TheBestGameEver.tbl");
+		setBGImage("mybackground");
+		if (isMidlet()) {
+			setFrameRate(20,1);
+			setGameSpeed(2.0);
+		} else {
+			setFrameRate(45,1);
+		}
+
+		setHighscores(10,new Highscore(0,"    "),15);
+		startgame_ingame=true;
+	}
+	public void initNewLife() {
+		removeObjects(null,0);
+		new Player(pfWidth()/2,pfHeight()-32,5);
+		if (level == 1)
+			new Boss(pfWidth()/2, pfHeight()-200, 5);
+	}
+	public void startGameOver() { removeObjects(null,0); }
+	public void doFrameInGame() {
+		moveObjects();
+		
+		//possible types of hitting
+		checkCollision(2,1); // enemies hit player
+		checkCollision(4,2); // bullets hit enemies
+		checkCollision(5,1); // bombs hits player
+		checkCollision(4,3); // bullets hit boss
+		
+		doLevel(level);
+		
+		//cheatcode for skipping levels
+				if (getKey('N')) {
+					levelDone();
+					clearKey('N');
+				}
+				
+	}
+	private void doLevel(int level) {
+		if (level == 0) {
+			if(checkTime(0,(int)(800),(int)((8-level/2))) )
+				new Enemy();
+			if (gametime>=800 && countObjects("enemy",0)==0)
+				levelDone();
+		}
+		
+		if (level == 1) {
+			if (timer % 20 == 0) {
+				new Boss(random (0,640), random(0,480), 5);
+			}
+		}
+		
+		if (level > 1) {
+			gameOver();
+		}
+	}
+	
+	
+	public void incrementLevel() {
+		score += 50;
+		if (level<=2) {
+			level++;
+			removeObjects(null,0);
+		}
+		if (level == 1)
+			new Boss(pfWidth()/2, pfHeight()-200, 5);
+		new Player(pfWidth()/2,pfHeight()-32,5);
+		
+	}
+	JGFont scoring_font = new JGFont("Arial",0,8);
+	
+	
+	public class Enemy extends JGObject {
+		double timer=0;
+		public Enemy() {
+			super("enemy",true,random(32,pfWidth()-40),-8,
+					2, stage%2==1 ? "humansmall" : "humansmall",
+					random(-1,1), (1.0+level/2.0), -2 );
+		}
+		public void move() {
+			timer += gamespeed;
+			x += random(-2, 2);
+			y += (gamespeed)*(gamespeed);
+			if (y>pfHeight()) y = -8;
+		}
+		public void hit(JGObject o) {
+			remove();
+			if (! getKey('C'))	
+				o.remove();
+			score += 5;
+		}
+	}
+	
+	
+	public class Player extends JGObject {
+		public Player(double x,double y,double speed) {
+			super("player",true,x,y,1,"airplane", 0,0,speed,speed,-1);
+		}
+		public void move() {
+			setDir(0,0);
+			////movement mechanisms
+			if (getKey(key_left)  && x > xspeed)               	xdir=-1;
+			if (getKey(key_right) && x < pfWidth()-32-xspeed)  	xdir=1;
+			if (getKey(key_up) && y > yspeed )					ydir=-1;
+			if (getKey(key_down) && y < pfHeight()-20-yspeed )	ydir=1;
+			
+			////firing mechanisms
+			if (getKey(key_fire))
+				if (getKey('X')) {
+					new JGObject("bullet",true,x,y-20,4,"bary", 0,-5, -2);
+					if (level == 1) {
+					new JGObject("bullet",true,x+20,y-20,4,"bary", 0,-5, -2);
+					new JGObject("bullet",true,x-20,y-20,4,"bary", 0,-5, -2);
+					} 
+					
+				} else {
+					if (countObjects("bullet",0) < level+30) {
+					new JGObject("bullet",true,x,y-20,4,"bary", 0,-5, -2);
+					if (level == 1) {
+					new JGObject("bullet",true,x+20,y-20,4,"bary", 0,-5, -2);
+					new JGObject("bullet",true,x-20,y-20,4,"bary", 0,-5, -2);
+					}
+				}
+				clearKey(key_fire);
+			}
+			
+		}
+		public void hit(JGObject obj) {
+			if (and(obj.colid,2)) lifeLost();
+			if (! getKey('C'))
+				if (and(obj.colid,5)) {
+					lifeLost();
+			}
+			else {
+				score += 5;
+				if (level != 1)
+					obj.remove();
+			}
+		}
+	}
+	
+	public class Boss extends JGObject{
+		public Boss(double x, double y, double speed) {
+			super ("boss",true,x,y,3,"darkplane",0,0, speed, speed, -1);
+		}
+		double health = 100;
+		
+		public void hit(JGObject o) {
+			if (! o.getClass().equals(Player.class))
+				if (health >= 0) {
+				o.remove();
+				health -= 5;
+				score +=5;
+				} else {
+				o.remove();
+				remove();
+				level++;
+				}
+		}
+		
+		public void move() {
+			setDir(0,0);
+			
+			////firing mechanisms
+			//we want our boss to be able to fire three bullets at a time
+			//we also want the bullets to be able to fire faster
+			if (countObjects("bomb", 0) < 5 ) {
+				//note that the counter for teleporting boss to new pos had to be global variable; 
+				//else, each move would set count = 0
+				teleport++;
+				if (teleport > 10) {
+					x = random(160,480);
+					y = random(0,240);
+					teleport = 0;
+				}
+				new JGObject("bomb",true,x+8,y+50,5,"bomb", 0, 5, -3);
+				new JGObject("bomb", true, x+8,y+50,5, "bomb", 1, 5, -3);
+				new JGObject("bomb", true, x+8,y+50,5, "bomb", -1, 5, -3);
+				//had to shift x-position because bombs do not fly out centered
+				
+			}
+		}
+		
+		
+	
+	}
+	public void paintFrameGameOver() {
+		if (level > 1)
+			drawString("Game Won!",
+			viewWidth()/2,viewHeight()/3,0,title_font,title_color);
+		else
+			drawString("Game Over !",
+					viewWidth()/2,viewHeight()/3,0,title_font,title_color);
+	}
+	
+}

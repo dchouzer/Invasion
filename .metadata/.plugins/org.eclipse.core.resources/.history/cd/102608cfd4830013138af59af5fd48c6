@@ -1,0 +1,23 @@
+package invasion;
+
+public interface Constants {
+	
+	public static final int key_left=38,KeyDown=40,KeyLeft=37,KeyRight=39;
+	public static final int KeyShift=16;
+	/** Fire stands for a mobile key, indicating the fire button of the cursor
+	 * controls.  It is equivalent to KeyShift. */
+	public static final int KeyFire=16;
+	public static final int KeyCtrl=17;
+	public static final int KeyAlt=18;
+	public static final int KeyEsc=27;
+	/** On a mobile, pressing "*" also triggers KeyEnter. */
+	public static final int KeyEnter=10;
+	/** The mobile Star key, equal to '*'. */
+	public static final int KeyStar='*';
+	/** The mobile Pound key, equal to '#'. */
+	public static final int KeyPound='#';
+	public static final int KeyBackspace=8; /* is it different sometimes? */
+	public static final int KeyTab=9;
+	/** Keymap equivalent of mouse button. */
+	public static final int KeyMouse1=256, KeyMouse2=257, KeyMouse3=258;
+}

@@ -1,0 +1,39 @@
+package invasion;
+
+import jgame.JGObject;
+
+public class MoveListener implements Constants {
+	/**
+	 * 
+	 */
+	public Observable subject;
+
+	public MoveListener(Observable subject) {
+		if (subject.grabKey(subject.key_left)  && x > xspeed)               	xdir=-1;
+		if (subject.grabKey(subject.key_right) && x < subject.pfWidth()-32-xspeed)  	xdir=1;
+		if (subject.grabKey(subject.key_up) && y > yspeed )					ydir=-1;
+		if (subject.grabKey(subject.key_down) && y < subject.pfHeight()-20-yspeed )	ydir=1;
+		
+		
+		////firing mechanisms
+		if (subject.grabKey(subject.key_fire))
+			if (subject.grabKey('X')) {
+				new JGObject("bullet",true,x,y-20,4,"bary", 0,-5, -2);
+				if (subject.level == 1) {
+				new JGObject("bullet",true,x+20,y-20,4,"bary", 0,-5, -2);
+				new JGObject("bullet",true,x-20,y-20,4,"bary", 0,-5, -2);
+				} 
+			} else {
+				if (subject.countObjects("bullet",0) < subject.level+30) {
+				new JGObject("bullet",true,x,y-20,4,"bary", 0,-5, -2);
+				if (subject.level == 1) {
+				new JGObject("bullet",true,x+20,y-20,4,"bary", 0,-5, -2);
+				new JGObject("bullet",true,x-20,y-20,4,"bary", 0,-5, -2);
+				}
+			}
+			subject.clearKey(subject.key_fire);
+		}
+	}
+	
+	
+}

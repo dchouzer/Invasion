@@ -1,0 +1,11 @@
+package Invasion;
+
+public interface MoveListener {
+	/**
+	 * 
+	 */
+	public Invasion invasion;
+
+	public MoveListener() {
+	}
+}

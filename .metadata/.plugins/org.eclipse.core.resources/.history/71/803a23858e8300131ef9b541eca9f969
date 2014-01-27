@@ -1,0 +1,58 @@
+package Invasion;
+
+import jgame.JGObject;
+
+public class Boss extends JGObject{
+	/**
+	 * 
+	 */
+	private final Invasion invasion;
+
+
+	public Boss(Invasion invasion, double x, double y, double speed) {
+		super ("boss",true,x,y,3,"darkplane",0,0, speed, speed, -1);
+		this.invasion = invasion;
+	}
+	double health = 100;
+	int teleport = 0;
+	
+	
+	public void hit(JGObject o) {
+		if (! o.getClass().equals(Player.class))
+			if (health >= 0) {
+			remove();
+			health -= 5;
+			this.invasion.score +=5;
+			} else {
+			o.remove();
+			remove();
+			this.invasion.level++;
+			}
+	}
+	
+	public void move() {
+		setDir(0,0);
+		
+		////firing mechanisms
+		//we want our boss to be able to fire three bullets at a time
+		//we also want the bullets to be able to fire faster
+		if (this.invasion.countObjects("bomb", 0) < 5 ) {
+			//note that the counter for teleporting boss to new pos had to be global variable; 
+			//else, each move would set count = 0
+			teleport++;
+			if (teleport > 10) {
+				x = this.invasion.random(160,480);
+				y = this.invasion.random(0,240);
+				teleport = 0;
+			}
+			new JGObject("bomb",true,x+8,y+50,5,"bomb", 0, 5, -3);
+			new JGObject("bomb", true, x+8,y+50,5, "bomb", 1, 5, -3);
+			new JGObject("bomb", true, x+8,y+50,5, "bomb", -1, 5, -3);
+			//had to shift x-position because bombs do not fly out centered
+			
+		}
+	}
+	
+	
+
+}

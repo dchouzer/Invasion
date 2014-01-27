@@ -1,0 +1,7 @@
+package invasion;
+
+public interface Constants {
+	
+	public static final int KeyUp=38,KeyDown=40,KeyLeft=37,KeyRight=39;
+	
+}

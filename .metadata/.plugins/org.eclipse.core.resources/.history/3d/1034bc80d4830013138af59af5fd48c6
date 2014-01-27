@@ -1,0 +1,14 @@
+package invasion;
+
+public class MoveListener implements Constants {
+	/**
+	 * 
+	 */
+	public Observable subject;
+
+	public MoveListener(Observable subject) {
+		
+	}
+	
+	
+}

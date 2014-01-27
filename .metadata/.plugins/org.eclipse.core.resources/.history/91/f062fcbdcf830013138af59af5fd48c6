@@ -1,0 +1,55 @@
+package Invasion;
+
+import jgame.JGObject;
+
+public class Player extends JGObject {
+	/**
+	 * 
+	 */
+	private final Invasion invasion;
+	
+	public Player(Invasion invasion, double x,double y,double speed) {
+		super("player",true,x,y,1,"airplane", 0,0,speed,speed,-1);
+		this.invasion = invasion;
+	}
+	public void move() {
+		setDir(0,0);
+		////movement mechanisms
+		if (this.invasion.getKey(this.invasion.key_left)  && x > xspeed)               	xdir=-1;
+		if (this.invasion.getKey(this.invasion.key_right) && x < this.invasion.pfWidth()-32-xspeed)  	xdir=1;
+		if (this.invasion.getKey(this.invasion.key_up) && y > yspeed )					ydir=-1;
+		if (this.invasion.getKey(this.invasion.key_down) && y < this.invasion.pfHeight()-20-yspeed )	ydir=1;
+		
+		////firing mechanisms
+		if (this.invasion.getKey(this.invasion.key_fire))
+			if (this.invasion.getKey('X')) {
+				new JGObject("bullet",true,x,y-20,4,"bary", 0,-5, -2);
+				if (this.invasion.level == 1) {
+				new JGObject("bullet",true,x+20,y-20,4,"bary", 0,-5, -2);
+				new JGObject("bullet",true,x-20,y-20,4,"bary", 0,-5, -2);
+				} 
+			} else {
+				if (this.invasion.countObjects("bullet",0) < this.invasion.level+30) {
+				new JGObject("bullet",true,x,y-20,4,"bary", 0,-5, -2);
+				if (this.invasion.level == 1) {
+				new JGObject("bullet",true,x+20,y-20,4,"bary", 0,-5, -2);
+				new JGObject("bullet",true,x-20,y-20,4,"bary", 0,-5, -2);
+				}
+			}
+			this.invasion.clearKey(this.invasion.key_fire);
+		}
+		
+	}
+	public void hit(JGObject obj) {
+		if (and(obj.colid,2)) this.invasion.lifeLost();
+		if (! this.invasion.getKey('C'))
+			if (and(obj.colid,5)) {
+				this.invasion.lifeLost();
+		}
+		else {
+			this.invasion.score += 5;
+			if (this.invasion.level != 1)
+				obj.remove();
+		}
+	}
+}

@@ -1,0 +1,50 @@
+package Invasion;
+
+import jgame.JGObject;
+
+public class Player extends JGObject {
+	public Player(double x,double y,double speed) {
+		super("player",true,x,y,1,"airplane", 0,0,speed,speed,-1);
+	}
+	public void move() {
+		setDir(0,0);
+		////movement mechanisms
+		if (getKey(key_left)  && x > xspeed)               	xdir=-1;
+		if (getKey(key_right) && x < pfWidth()-32-xspeed)  	xdir=1;
+		if (getKey(key_up) && y > yspeed )					ydir=-1;
+		if (getKey(key_down) && y < pfHeight()-20-yspeed )	ydir=1;
+		
+		////firing mechanisms
+		if (getKey(key_fire))
+			if (getKey('X')) {
+				new JGObject("bullet",true,x,y-20,4,"bary", 0,-5, -2);
+				if (level == 1) {
+				new JGObject("bullet",true,x+20,y-20,4,"bary", 0,-5, -2);
+				new JGObject("bullet",true,x-20,y-20,4,"bary", 0,-5, -2);
+				} 
+				
+			} else {
+				if (countObjects("bullet",0) < level+30) {
+				new JGObject("bullet",true,x,y-20,4,"bary", 0,-5, -2);
+				if (level == 1) {
+				new JGObject("bullet",true,x+20,y-20,4,"bary", 0,-5, -2);
+				new JGObject("bullet",true,x-20,y-20,4,"bary", 0,-5, -2);
+				}
+			}
+			clearKey(key_fire);
+		}
+		
+	}
+	public void hit(JGObject obj) {
+		if (and(obj.colid,2)) lifeLost();
+		if (! getKey('C'))
+			if (and(obj.colid,5)) {
+				lifeLost();
+		}
+		else {
+			score += 5;
+			if (level != 1)
+				obj.remove();
+		}
+	}
+}

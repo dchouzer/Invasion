@@ -1,0 +1,14 @@
+package invasion;
+
+public class MoveListener {
+	/**
+	 * 
+	 */
+	public Observable subject;
+
+	public MoveListener(Observable subject) {
+		
+	}
+	
+	
+}

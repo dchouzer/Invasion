@@ -1,0 +1,31 @@
+package Invasion;
+
+import jgame.JGObject;
+
+public class Player extends JGObject {
+	private MoveListener data = new MoveListener();
+
+	public Player(Invasion invasion, double x,double y,double speed) {
+		super("player",true,x,y,1,"airplane", 0,0,speed,speed,-1);
+		this.data.invasion = invasion;
+	}
+	public void move() {
+		setDir(0,0);
+		////movement mechanisms
+		
+		data.listen();
+		
+	}
+	public void hit(JGObject obj) {
+		if (and(obj.colid,2)) this.data.invasion.lifeLost();
+		if (! this.data.invasion.getKey('C'))
+			if (and(obj.colid,5)) {
+				this.data.invasion.lifeLost();
+		}
+		else {
+			this.data.invasion.score += 5;
+			if (this.data.invasion.level != 1)
+				obj.remove();
+		}
+	}
+}

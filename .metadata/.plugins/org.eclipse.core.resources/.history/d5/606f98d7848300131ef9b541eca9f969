@@ -1,0 +1,29 @@
+package Invasion;
+
+import jgame.JGObject;
+
+public class Enemy extends JGObject {
+	/**
+	 * 
+	 */
+	private final Invasion invasion;
+	double timer=0;
+	public Enemy(Invasion invasion) {
+		super("enemy",true,this.invasion.random(32,this.invasion.pfWidth()-40),-8,
+				2, this.invasion.stage%2==1 ? "humansmall" : "humansmall",
+				this.invasion.random(-1,1), (1.0+this.invasion.level/2.0), -2 );
+		this.invasion = invasion;
+	}
+	public void move() {
+		timer += gamespeed;
+		x += this.invasion.random(-2, 2);
+		y += (gamespeed)*(gamespeed);
+		if (y>this.invasion.pfHeight()) y = -8;
+	}
+	public void hit(JGObject o) {
+		remove();
+		if (! this.invasion.getKey('C'))	
+			o.remove();
+		this.invasion.score += 5;
+	}
+}

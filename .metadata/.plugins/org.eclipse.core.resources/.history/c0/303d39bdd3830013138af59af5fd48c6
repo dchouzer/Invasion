@@ -1,0 +1,7 @@
+package Invasion;
+
+public interface Observable {
+	
+	public abstract boolean grabKey(int key);
+
+}

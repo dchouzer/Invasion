@@ -1,0 +1,13 @@
+1390409070053	Delete element
+1390409075135	Delete element
+1390409086359	Move type 'Boss' to new file
+1390409131689	Move type 'Player' to new file
+1390409207762	Move type 'Enemy' to new file
+1390409386985	Rename method 'doLevel'
+1390413078831	Extract method 'checkCollisions'
+1390441469777	Extract Class...
+1390443118937	Rename package 'Invasion'
+1390446138030	Delete element
+1390446143445	Delete element
+1390446149229	Delete element
+1390446562736	Extract method 'moveAndShoot'

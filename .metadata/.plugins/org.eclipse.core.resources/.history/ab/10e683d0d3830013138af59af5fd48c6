@@ -1,0 +1,5 @@
+package invasion;
+
+public interface Constants {
+
+}
